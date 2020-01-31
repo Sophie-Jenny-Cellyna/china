@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+
+    <style>
+        .centerItem {
+            height: 640px;
+            margin: 5px 2px 5px 2px;
+            float: left;
+            border:1px solid #969696;
+        }
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="css/ui-all/easyui.css"/>
+    <link rel="stylesheet" type="text/css" href="css/icon.css"/>
+    <script type="text/javascript" src="js/build/jquery/jquery.js"></script>
+    <script type="text/javascript" src="js/build/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/build/easyui-lang-zh_CN.js"></script>
+    <script type="text/javascript" src="js/build/echarts.main.js"></script>
+    <script type="text/javascript" src="js/build/china.js"></script>
+    <!--配置-->
+    <script type="text/javascript" src="js/util/configuration.js"></script>
+    <!--数据-->
+    <script type="text/javascript" src="data/data.js"></script>
+    <!--方法-->
+    <script type="text/javascript" src="js/util/function.js"></script>
+    <!--主入口-->
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+<body>
+    <!-- 中国地图展示 -->
+    <div id="mapBox" class="centerItem" style="width:64%;"></div>
+    <div id="" class="centerItem"  style="width:35%;">
+        时间<input id="time" type="text"></br>
+        <!-- 省份<input id="province" type="text"></br> -->
+        地区<input id="city" type="text"></br>
+        车次<input id="tb" type="text"></br>
+        <a id="search" class="easyui-linkbutton">查询</a>
+    </div>
+    <div style="clear: both; height: 600px;margin: 5px 2px 5px 2px;">
+        <table id="tt"></table>
+    </div>
+</body>
+</html>
