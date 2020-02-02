@@ -1,4 +1,63 @@
 "use strict"
+
+function timeLine(datas){
+    //处理时间轴数据
+    var timestamp_arr = [];
+    for(let i = 0; i < datas.length; i++){
+        let data = datas[i];
+        let t_date = data.t_date;   //时间
+        timestamp_arr.push(new Date(t_date).getTime());
+    }
+    var timestamp_set = new Set(timestamp_arr);//去重
+    timestamp_arr = Array.from(timestamp_set);//转化数组
+    timestamp_arr.sort(function(a,b){
+        return a - b;
+    });//从小到打排序
+
+    var time_data = [];
+    for(let i = 0; i < timestamp_arr.length; i++){
+        time_data.push(date2String(timestamp_arr[i]));
+    }
+
+    //时间轴开始
+    var time_chart = echarts.init(document.getElementById('time'));
+    var option = {
+        dataZoom: [
+            {
+                show: true,
+                // backgroundColor:"red",
+                fillerColor:"#969696",    //选中范围的填充颜色。
+                borderColor:"#969696", //边框颜色。
+                realtime: true,
+                start: 0,
+                end: 100,
+                left:"center",  //组件离容器左侧的距离,'left', 'center', 'right','20%'
+                top:"middle"  //组件离容器上侧的距离,'top', 'middle', 'bottom','20%'
+            }
+        ],
+        xAxis: [
+            {
+                show : false,
+                data: time_data
+            }
+        ],
+        yAxis: [
+            {
+                show : false,
+            }
+        ]
+    };
+    time_chart.setOption(option);
+
+    //滑动时触发
+    // time_chart.on( 'datazoom', function (params) {
+    //     console.log(params);
+    // });
+    return [time_chart, time_data];
+}
+
+
+
 // push进去线路开始-结束地点-经纬度
 function convertData(data, geoCoordMap) {
     var res = [];
@@ -107,7 +166,9 @@ function computingData(arr, geoCoordMap, HFData){
             data: item[1].map(function(dataItem) {
                 return {
                     name: dataItem[1].name,
-                    value: geoCoordMap[dataItem[1].name].concat([dataItem[1].value])
+                    value: geoCoordMap[dataItem[1].name] === undefined
+                            ? 0
+                            : geoCoordMap[dataItem[1].name].concat([dataItem[1].value])
                 };
             })
         });
@@ -116,11 +177,11 @@ function computingData(arr, geoCoordMap, HFData){
 }
 
 //查询坐标
-function getHFData_ajax_arr(time, city, tb_no){
+function getHFData_ajax_arr(start_time, end_time, city, tb_no, wuhan_data){
     var new_data = [];
     var end = {};
-    for(let i = 0; i < __data__.data.length; i++){
-        let data = __data__.data[i];
+    for(let i = 0; i < wuhan_data.length; i++){
+        let data = wuhan_data[i];
         let t_date = data.t_date;   //时间
         let t_pos_start = data.t_pos_start; //地区
         let t_pos_end = data.t_pos_end;
@@ -133,11 +194,14 @@ function getHFData_ajax_arr(time, city, tb_no){
                 end[city] = 1;
             }
         }
-        //时间
-        if(time !== ""){
-            if(new Date(time).getTime() !== new Date(t_date).getTime()){
-                continue;
-            }
+        //判断时间是否在范围内
+        if(
+            new Date(t_date).getTime() < new Date(start_time).getTime()
+            ||
+            new Date(t_date).getTime() >  new Date(end_time).getTime()
+        ){
+            console.log(start_time, t_date, end_time);
+            continue;
         }
         //地区
         if(t_pos_start.search(city) === -1){
@@ -158,7 +222,6 @@ function getHFData_ajax_arr(time, city, tb_no){
         
     }   //for
 
-
     //得到geoCoordMap
     var ajax_arr = [];
 
@@ -176,7 +239,9 @@ function getHFData_ajax_arr(time, city, tb_no){
             type:'get',
             dataType:'jsonp',
             success:function(info){
-                __constent__.geoCoordMap[e] = [info.result.location.lng, info.result.location.lat];//保存
+                if(info.status !== 1){
+                    __constent__.geoCoordMap[e] = [info.result.location.lng, info.result.location.lat];//保存
+                }
             }
         });
         ajax_arr.push(aj);
@@ -187,18 +252,15 @@ function getHFData_ajax_arr(time, city, tb_no){
 
 function table_datagrid(target, data){
     $(target).datagrid({
-        data: data,
-        fitColumns : true,
-        striped : true,
-        remoteSort: false,
-        // pagination : true,//分页
-        // pageNumber:1,
-		// pageSize:20,//默认一页显示10个数据
+        fitColumns:true, 
+        pagination:true, 
+        data:data.slice(0,10), 
+        // remoteSort:false,   //设置为本地排序
         columns:[[
             {field:'t_type',title:'交通类型',formatter:function(value,row,index){
                 switch(value) {
                     case 1:
-                       return "飞机";
+                        return "飞机";
                     case 2:
                         return "火车";
                     case 4:
@@ -211,7 +273,7 @@ function table_datagrid(target, data){
                         return "其它公共场所";
                     default:
                         return value;
-               }
+                }
             }, sortable:true, sorter : function(a,b){
                 return  a - b;
             }},
@@ -244,4 +306,34 @@ function table_datagrid(target, data){
             }}
         ]]
     });
+
+
+    var pager = $(target).datagrid("getPager"); 
+    pager.pagination({ 
+        total:data.length, 
+        onSelectPage:function (pageNo, pageSize) { 
+            var start = (pageNo - 1) * pageSize; 
+            var end = start + pageSize; 
+            $(target).datagrid("loadData", data.slice(start, end)); 
+            pager.pagination('refresh', { 
+                total:data.length, 
+                pageNumber:pageNo 
+            }); 
+        } 
+    }); 
+    
+}
+
+function date2String(timestamp){
+    var date = new Date(timestamp);
+    var year = date.getFullYear(); 
+    var month =(date.getMonth() + 1).toString(); 
+    var day = (date.getDate()).toString();  
+    if (month.length == 1) { 
+        month = "0" + month; 
+    } 
+    if (day.length == 1) { 
+        day = "0" + day; 
+    }
+    return year + "-" + month + "-" + day;
 }

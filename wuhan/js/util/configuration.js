@@ -1,4 +1,5 @@
 var __constent__ = {
+    data_url : "http://2019ncov.nosugartech.com/data.json",
     ak : "cl1Pbdh82UOAXOQitULyfgZFBERX3PQ4",
     planePath : "arrow", // 箭头的svg
     color : ['#fff', '#FFFFA8', '#46bee9'], //圆圈和字的颜色，线的颜色，箭头颜色
