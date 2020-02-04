@@ -1,4 +1,14 @@
 var __constent__ = {
+    type : {
+        "1" : "飞机",
+        "2" : "火车",
+        "3" : "地铁",
+        "4" : "长途客车/大巴",
+        "5" : "公交车",
+        "6" : "出租车",
+        "7" : "轮船",
+        "8" : "其他公共场所",
+    },
     data_url : "http://2019ncov.nosugartech.com/data.json",
     ak : "cl1Pbdh82UOAXOQitULyfgZFBERX3PQ4",
     planePath : "arrow", // 箭头的svg

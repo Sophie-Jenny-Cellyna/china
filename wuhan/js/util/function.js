@@ -1,5 +1,6 @@
 "use strict"
 
+//时间轴
 function timeLine(datas){
     //处理时间轴数据
     var timestamp_arr = [];
@@ -178,7 +179,7 @@ function computingData(arr, geoCoordMap, HFData){
 
 //查询坐标
 function getHFData_ajax_arr(start_time, end_time, city, tb_no, wuhan_data){
-    var new_data = [];
+    var new_data = [];  //筛选过后的数据数组
     var end = {};
     for(let i = 0; i < wuhan_data.length; i++){
         let data = wuhan_data[i];
@@ -250,6 +251,7 @@ function getHFData_ajax_arr(start_time, end_time, city, tb_no, wuhan_data){
     
 }
 
+//数据表
 function table_datagrid(target, data){
     $(target).datagrid({
         fitColumns:true, 
@@ -258,22 +260,7 @@ function table_datagrid(target, data){
         // remoteSort:false,   //设置为本地排序
         columns:[[
             {field:'t_type',title:'交通类型',formatter:function(value,row,index){
-                switch(value) {
-                    case 1:
-                        return "飞机";
-                    case 2:
-                        return "火车";
-                    case 4:
-                        return "长途客车/大巴";
-                    case 5:
-                        return "火车";
-                    case 6:
-                        return "出租车";
-                    case 8:
-                        return "其它公共场所";
-                    default:
-                        return value;
-                }
+                return __constent__.type[value.toString(10)];
             }, sortable:true, sorter : function(a,b){
                 return  a - b;
             }},
@@ -336,4 +323,190 @@ function date2String(timestamp){
         day = "0" + day; 
     }
     return year + "-" + month + "-" + day;
+}
+
+function cakeData(ajax_arr_data2){
+    var cake_method = [];
+    var cake_data_set = {};
+    for(let i = 0, arr_length = ajax_arr_data2.length; i < arr_length; i++){
+        let t_type = ajax_arr_data2[i].t_type;
+        let method = __constent__.type[t_type];
+        if(cake_method.indexOf(method) === -1){
+            cake_method.push(method);
+        }
+        if(cake_data_set[method] === undefined){
+            cake_data_set[method] = 1;
+        }else{
+            cake_data_set[method] += 1;
+        }
+
+    }
+    var cake_data = [];
+    for(let method in cake_data_set){
+        cake_data.push({name : method, value : cake_data_set[method]});
+    }
+
+    return [cake_method, cake_data];
+}
+
+
+//饼
+function cakeChart(cake_method, cake_data, origin, ajax_arr_data2){
+    var cake_chart = echarts.init(document.getElementById('cake'));
+    var option = {
+        title: {
+            text: "从" + origin +"出发使用的交通工具占比",
+            left: 'center'
+        },
+        legend: {
+            orient: 'vertical',
+            left: 'left',
+            data: cake_method
+        },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        series: [
+            {
+                name: "",
+                type: 'pie',
+                selectedMode: 'single',
+                radius: [0, '50%'],
+    
+                label: {
+                    position: 'inner'
+                },
+                labelLine: {
+                    show: false
+                },
+                data: cake_data
+            }
+        ]
+    };
+    cake_chart.setOption(option);
+     // 处理点击事件并且跳转到相应的百度搜索页面
+    cake_chart.on('click', function (params) {
+
+        var method = params.name;
+        for(var type in __constent__.type){
+            if(__constent__.type[type] === method){
+                break;
+            }
+        }
+        var barChart_data = {};//组装数据
+        for(let i = 0, arr_length = ajax_arr_data2.length; i < arr_length; i++){
+            if(parseInt(type) !== ajax_arr_data2[i].t_type){
+                continue;
+            }
+            let pos_end = ajax_arr_data2[i].t_pos_end;//目的地
+            if(barChart_data[pos_end] === undefined){
+                barChart_data[pos_end] = 1;
+            }else{
+                barChart_data[pos_end] += 1;
+            }
+            
+        }
+        /*
+        //值排序 用于筛选前多少个
+        var value_arr = [];
+        Object.getOwnPropertyNames(barChart_data).forEach(function(key){
+            value_arr.push(barChart_data[key]);
+        });
+        value_arr.sort(function(a, b){
+            return b - a;   //从大到小排序
+        });
+        var v = value_arr[10];//结尾数据
+        if(v !== undefined){    //不足
+            var delete_key = [];
+            for(let key in barChart_data){
+                if(barChart_data[key] < v){
+                    delete_key.push(key);
+                }
+            }
+            for(let i = 0; i < delete_key.length; i++){
+                delete barChart_data[delete_key[i]];
+            }
+        }
+        */
+        barChart(barChart_data, origin, method);
+    });
+
+}
+
+function barChart(builderJson, origin, method){
+    var bar_chart = echarts.init(document.getElementById('bar'));
+      
+    var option = {
+        title: {
+            text: "从" + origin + "使用" + method + "出行到达各地的人数",
+            left: 'center'
+        },
+        xAxis: [{
+            type: 'value',
+            splitLine: {
+                show: false
+            }
+        }],
+        yAxis: [{
+            type: 'category',
+            data: Object.keys(builderJson),
+            // axisLabel: {
+            //     textStyle: {
+            //         fontSize:'7'
+            //     },
+            //     interval: 0,
+            //     rotate: 45//倾斜
+            // },
+            // splitLine: {
+            //     show: false
+            // }
+            axisLabel: {
+                inside: true,
+                textStyle: {
+                    color: '#fff'
+                }
+            },
+            axisTick: {
+                show: false
+            },
+            axisLine: {
+                show: false
+            },
+            z: 10
+            
+        }],
+        dataZoom: [
+            {
+                id: 'dataZoomY',
+                type: 'inside',
+                yAxisIndex: [0],
+                filterMode: 'filter'
+            }
+        ],
+        series: [
+            { // For shadow
+                type: 'bar',
+                itemStyle: {
+                    color: 'rgba(0,0,0,0.05)'
+                },
+                barGap: '-100%',
+                barCategoryGap: '40%',
+                // data: dataShadow,
+                animation: false
+            },{
+            type: 'bar',
+            label: {
+                normal: {
+                    position: 'right',
+                    show: true
+                }
+            },
+            data: Object.keys(builderJson).map(function (key) {
+                return builderJson[key];
+            })
+        }]
+    };
+    bar_chart.setOption(option);
+
 }

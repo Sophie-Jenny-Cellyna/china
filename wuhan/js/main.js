@@ -52,6 +52,9 @@ $(function(){
                 mapBoxEchart.setOption(__constent__.mapBoxOption(series));
                 table_datagrid("#tt", ajax_arr_data[2]);
             });
+            var cake_data = cakeData(ajax_arr_data[2]);
+            cakeChart(cake_data[0], cake_data[1], city, ajax_arr_data[2]);
+            // barChart();
     
         });
     
