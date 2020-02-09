@@ -1,3 +1,4 @@
+"use strict"
 var __constent__ = {
     type : {
         "1" : "飞机",
@@ -10,11 +11,21 @@ var __constent__ = {
         "8" : "其他公共场所",
     },
     data_url : "http://2019ncov.nosugartech.com/data.json",
+    num_data_url : "https://www.tianqiapi.com/api?version=epidemic&appid=23035354&appsecret=8YvlPNrz",
     ak : "cl1Pbdh82UOAXOQitULyfgZFBERX3PQ4",
     planePath : "arrow", // 箭头的svg
     color : ['#fff', '#FFFFA8', '#46bee9'], //圆圈和字的颜色，线的颜色，箭头颜色
     mapBoxOption : function(series){    //地图配置  指定相关的配置项和数据
         return {
+            backgroundColor: '#404a59',
+            title: {
+                text: "全国确诊病例迁徙图",
+                left: 'center',
+                textStyle : {
+                    fontSize : 25,
+                    color: '#fff'
+                }
+            },
             tooltip: {
                 trigger: 'item',
                 formatter: function (params) {
@@ -32,28 +43,28 @@ var __constent__ = {
                 zoom: 1.2,
                 label: {
                     normal: {
-                        show: false,
-                        textStyle: {
-                            color: '#00a0c9'
-                        }
+                        // textStyle: {
+                        //     color: '#00a0c9'
+                        // },
+                        show: false
                     },
                     emphasis: { // 对应的鼠标悬浮效果
-                        show: false,
-                        textStyle: {
-                            color: "#00a0c9"
-                        }
+                        // textStyle: {
+                        //     color: "#00a0c9"
+                        // },
+                        show: false
                     }
                 },
                 itemStyle: {
                     normal: {
-                        areaColor: '#0083ce',
-                        borderColor: '#43D0D6',
+                        areaColor: "#323c48",
+                        borderColor: "#000000",
                         borderWidth: 1
                     },
                     emphasis: {
                         borderWidth: 1.5,
-                        borderColor: '#43D0D6',
-                        areaColor: "#43D0D6",
+                        borderColor : "#2a333d",
+                        areaColor: "#2a333d",
                         shadowColor: 'rgba(0, 0, 0, 0.5)'
                     }
                 }

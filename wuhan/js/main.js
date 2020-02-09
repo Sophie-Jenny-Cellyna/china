@@ -1,6 +1,25 @@
 "use strict"
 
 $(function(){
+    $.get(__constent__.num_data_url, function(datas){
+        var data = datas.data;
+        var update_time = data.date; //更新时间
+        var diagnosed = data.diagnosed; //确诊人数
+        var suspect = data.suspect;//疑似病例人数
+        var death = data.death;//死亡人数
+        var cured = data.cured;//治愈人数
+        var serious = data.serious;//重症人数
+        var list = data.list;//全国数据列表
+        var history = data.history;//每日历史数据
+        $("#update_time").html("数据更新时间：" + update_time);
+        var dataMap = lineData(history);
+        drawLine(dataMap[0], "line1", "全国累计确诊/疑似趋势(人)");
+        drawLine(dataMap[1], "line2", "全国累计治愈/死亡趋势(人)");
+        var d = hotMapData(list);
+        hotMap("hotMap", d);
+
+    });
+
     $.get(__constent__.data_url, function(wuhan_data){
         // 基于准备好的dom，初始化echarts实例
         var mapBoxEchart = echarts.init(document.getElementById('mapBox'));

@@ -26,12 +26,25 @@
     <!--数据-->
     <script type="text/javascript" src="data/data.js"></script>
     <!--方法-->
+    <script type="text/javascript" src="js/util/topfunction.js"></script>
     <script type="text/javascript" src="js/util/function.js"></script>
     <!--主入口-->
     <script type="text/javascript" src="js/main.js"></script>
 </head>
 <body>
-    
+    <div id="update_time" style="font-family:'黑体';font-size: 12px;"></div>
+    <div id="hotMap" class="centerItem" style="width:64%;"></div>
+    <div class="centerItem"  style="width:35%;">
+            <div id="line1" style="width:100%;height: 50%;"></div>
+            <div id="line2" style="width:100%;height: 50%;border-top:1px solid #969696;"></div>
+    </div>
+    <div style="clear: both;margin: 5px 2px 5px 2px;">
+    </div>
+    <!--
+        https://www.tianqiapi.com/api?version=epidemic&appid=23035354&appsecret=8YvlPNrz
+        说明 http://www.tianqiapi.com/index/doc?version=epidemic
+    -->
+
     <div style="margin: 5px 2px 5px 2px;border:1px solid #969696;">
         <div id="time" style="float: left;width: 70%;height:50px;"></div>
         <div style="float: left;width : 30%;height:50px;text-align:center;margin:0 auto;">

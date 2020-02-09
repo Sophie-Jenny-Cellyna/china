@@ -149,6 +149,7 @@ function computingData(arr, geoCoordMap, HFData){
             rippleEffect: {
                 brushType: 'stroke'
             },
+            hoverAnimation: true,
             label: {
                 normal: {
                     show: true,
@@ -369,11 +370,10 @@ function cakeChart(cake_method, cake_data, origin, ajax_arr_data2){
         },
         series: [
             {
-                name: "",
+                name: "从" + origin +"出发",
                 type: 'pie',
                 selectedMode: 'single',
                 radius: [0, '50%'],
-    
                 label: {
                     position: 'inner'
                 },
