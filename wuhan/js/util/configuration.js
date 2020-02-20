@@ -11,7 +11,7 @@ var __constent__ = {
         "8" : "其他公共场所",
     },
     data_url : "http://2019ncov.nosugartech.com/data.json",
-    num_data_url : "https://www.tianqiapi.com/api?version=epidemic&appid=23035354&appsecret=8YvlPNrz",
+    num_data_url : "https://tianqiapi.com/api?version=epidemic&appid=67683955&appsecret=3fwWMHN2",
     ak : "cl1Pbdh82UOAXOQitULyfgZFBERX3PQ4",
     planePath : "arrow", // 箭头的svg
     color : ['#fff', '#FFFFA8', '#46bee9'], //圆圈和字的颜色，线的颜色，箭头颜色
